@@ -5,16 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class BaseUserModel {
-    private String getFullName;
-    private LocalDateTime getBirthDay;
-    private String getUsername;
-    private String getEmail;
-    private String getPassword;
+public interface BaseUserModel {
+    String getFullName();
+    LocalDate getBirthDay();
+    String getUsername();
+    String getEmail();
+    String getPassword();
 }

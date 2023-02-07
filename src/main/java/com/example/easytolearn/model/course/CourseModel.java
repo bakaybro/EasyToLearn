@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @SuperBuilder
 public class CourseModel implements BaseCourseModel {
     private Long id;
-    private Long CategoryId;
+    private Long categoryId;
     private String courseName;
     private String email;
     private String phoneNumber;

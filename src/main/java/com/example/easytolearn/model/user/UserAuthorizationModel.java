@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class UserAuthModel {
+public class UserAuthorizationModel {
     private String username;
     private String password;
 }
