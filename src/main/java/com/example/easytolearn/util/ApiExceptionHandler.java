@@ -20,7 +20,7 @@ public class ApiExceptionHandler {
         return ResponseEntity.ok(failResponseMessage);
     }
 
-    @ExceptionHandler(value = ApiFailException.class)
+    @ExceptionHandler(value = ApiErrorException.class)
     public ResponseEntity<ResponseMessage<String>> handlerErrorException(ApiErrorException apiErrorException) {
         ResponseMessage<String> errorResponseMessage =
                 new ResponseMessage<String>().prepareErrorMessage(apiErrorException.getMessage());
