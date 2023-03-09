@@ -2,6 +2,8 @@ package com.example.easytolearn.repository;
 
 import com.example.easytolearn.entity.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -9,4 +11,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findAllByUserId(Long userId);
 
     List<Course> findAllByCategoryId(Long categoryId);
+
+    @Query("FROM Course c WHERE c.courseName LIKE :courseName%")
+    List<Course> findAllByCourseName(@Param("courseName") String courseName);
+
+    @Query("FROM Course c JOIN c.category r WHERE r.categoryName LIKE :categoryName%")
+    List<Course> findAllByCategoryName(@Param("categoryName") String categoryName);
 }
