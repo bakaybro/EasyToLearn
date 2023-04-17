@@ -1,12 +1,13 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
+
 @Entity
-@Table(name = "users_image")
+@Table(name = "users_images")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +19,6 @@ public class UserImage extends BaseEntity {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

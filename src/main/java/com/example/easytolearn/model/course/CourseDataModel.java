@@ -12,9 +12,9 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class CourseDataModel {
     private String authorFullName;
     private CourseModel courseModel;

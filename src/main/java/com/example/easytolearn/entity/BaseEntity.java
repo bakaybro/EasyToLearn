@@ -1,9 +1,7 @@
 package com.example.easytolearn.entity;
 
+import lombok.*;
 import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -14,20 +12,19 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
 
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
     @PostPersist
     public void postPersist() {
-        this.createdDate = LocalDateTime.now();
+        this.createDate = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updateDate = LocalDateTime.now();
     }
-
 }

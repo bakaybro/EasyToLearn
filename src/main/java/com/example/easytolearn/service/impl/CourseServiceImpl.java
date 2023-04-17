@@ -30,7 +30,7 @@ public class CourseServiceImpl implements CourseService {
     private UserService userService;
     @Autowired
     @Lazy
-    private LessonServiceImpl lessonService;
+    private LessonService lessonService;
     @Autowired
     @Lazy
     private CommentService commentService;
@@ -114,7 +114,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDataModel> getAllCourseDataModelByCategoryId(Long id) {
-        return courseRepository.findAllByCategoryId(id)
+        return courseRepository.findAllByCategory_Id(id)
                 .stream()
                 .map(i -> getCourseDataModelByCourseId(i.getId()))
                 .collect(Collectors.toList());
@@ -122,7 +122,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDataModel> getAllCourseDataModelByUserId(Long userId) {
-        return courseRepository.findAllByUserId(userId)
+        return courseRepository.findAllByUser_Id(userId)
                 .stream()
                 .map(i -> getCourseDataModelByCourseId(i.getId()))
                 .collect(Collectors.toList());

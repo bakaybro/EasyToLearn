@@ -7,7 +7,7 @@ import com.example.easytolearn.model.comment.CommentModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommentConverter extends BaseConverter<CommentModel, Comment>{
+public class CommentConverter extends BaseConverter<CommentModel, Comment> {
 
     public CommentConverter() {
         super(CommentConverter::convertToEntity, CommentConverter::convertToModel);

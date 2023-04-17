@@ -4,7 +4,6 @@ import com.example.easytolearn.entity.UserRole;
 import com.example.easytolearn.repository.UserRoleRepository;
 import com.example.easytolearn.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
-
     private final UserRoleRepository userRoleRepository;
 
     @Override

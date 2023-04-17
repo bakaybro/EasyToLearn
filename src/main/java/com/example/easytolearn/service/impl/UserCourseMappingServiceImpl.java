@@ -6,8 +6,8 @@ import com.example.easytolearn.entity.User;
 import com.example.easytolearn.entity.UserBalance;
 import com.example.easytolearn.entity.UserCourseMapping;
 import com.example.easytolearn.exception.ApiFailException;
-import com.example.easytolearn.model.UserCourseMappingModel;
 import com.example.easytolearn.model.course.CourseDataModel;
+import com.example.easytolearn.model.UserCourseMappingModel;
 import com.example.easytolearn.model.user.BaseUserModel;
 import com.example.easytolearn.repository.UserCourseMappingRepository;
 import com.example.easytolearn.service.CourseService;
@@ -65,7 +65,7 @@ public class UserCourseMappingServiceImpl implements UserCourseMappingService {
     @Override
     public List<BaseUserModel> getAllCustomersByCourseId(Long courseId) {
         return userCourseMappingRepository
-                .findAllByCourseId(courseId)
+                .findAllByCourse_Id(courseId)
                 .stream()
                 .map(UserCourseMapping::getUser)
                 .map(i -> userService.getUserModelById(i.getId()))
@@ -75,7 +75,7 @@ public class UserCourseMappingServiceImpl implements UserCourseMappingService {
     @Override
     public UserCourseMapping getByCourseIdAndUserId(Long courseId, Long userId) {
         return userCourseMappingRepository
-                .findByCourseIdAndUserId(courseId, userId)
+                .findByCourse_IdAndUser_Id(courseId, userId)
                 .orElse(null);
     }
 
@@ -85,9 +85,9 @@ public class UserCourseMappingServiceImpl implements UserCourseMappingService {
     }
 
     @Override
-    public List<CourseDataModel> getAllPurchasedCoursesBuUserId(Long userId) {
+    public List<CourseDataModel> getAllPurchasedCourses(Long userId) {
         return userCourseMappingRepository
-                .findAllByUserId(userId)
+                .findAllByUser_Id(userId)
                 .stream()
                 .map(UserCourseMapping::getCourse)
                 .map(i -> courseService.getCourseDataModelByCourseId(i.getId()))

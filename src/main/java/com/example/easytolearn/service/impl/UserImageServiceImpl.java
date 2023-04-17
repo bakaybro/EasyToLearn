@@ -65,7 +65,7 @@ public class UserImageServiceImpl implements UserImageService {
 
     @Override
     public UserImage getUserImageByUserId(Long userId) {
-        return userImageRepository.findByUserId(userId).orElse(null);
+        return userImageRepository.findByUser_Id(userId).orElse(null);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class UserImageServiceImpl implements UserImageService {
     }
 
     private void updateUserImageUrlForCommentsByUserId(Long userId, String url) {
-        List<Comment> comments = commentRepository.findAllByUserId(userId);
+        List<Comment> comments = commentRepository.findAllByUser_Id(userId);
         if (!comments.isEmpty()) {
             comments.forEach(comment -> comment.setUserImageUrl(url));
             commentRepository.saveAll(comments);

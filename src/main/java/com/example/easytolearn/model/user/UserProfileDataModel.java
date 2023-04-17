@@ -11,9 +11,9 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class UserProfileDataModel {
     private String token;
     private UserModelToSend userModelToSend;

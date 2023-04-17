@@ -1,10 +1,10 @@
 package com.example.easytolearn.util;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.easytolearn.exception.ApiErrorException;
 import com.example.easytolearn.exception.ApiFailException;
 import lombok.experimental.UtilityClass;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,7 +14,8 @@ import java.util.Objects;
 
 @UtilityClass
 public class ImageUtil {
-    private static final String CLOUDINARY_URL = "cloudinary://349958975956714:wJERqVH-qai2mlMdGYqzSY__kFM@du9qubfii";
+
+    private static final String CLOUDINARY_URL = "cloudinary://276123242311464:R5oT9kU36JbIJqurpzev_8MPMl8@dq0y7sp3u";
 
     public static String saveImageInCloudinary(MultipartFile multipartFile) {
         try {

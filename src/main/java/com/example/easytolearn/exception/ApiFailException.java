@@ -1,6 +1,7 @@
 package com.example.easytolearn.exception;
 
 public class ApiFailException extends RuntimeException {
+
     public ApiFailException(String message) {
         super(message);
     }

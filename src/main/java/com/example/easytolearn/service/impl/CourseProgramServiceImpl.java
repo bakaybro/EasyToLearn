@@ -50,19 +50,6 @@ public class CourseProgramServiceImpl implements CourseProgramService {
     }
 
     @Override
-    public CourseProgramModel updateCourseProgram(UpdateCourseProgramModel updateCourseProgramModel) {
-        Long programId = updateCourseProgramModel.getId();
-        CourseProgram dataCourseProgram = getDataCourseProgramByIdWithCheckAccess(programId);
-
-        validateLengthVariables(updateCourseProgramModel);
-        validateVariablesForNullOrIsEmptyUpdate(updateCourseProgramModel);
-
-        setVariablesForUpdateCourseProgram(dataCourseProgram, updateCourseProgramModel);
-        courseProgramRepository.save(dataCourseProgram);
-        return courseProgramConverter.convertFromEntity(dataCourseProgram);
-    }
-
-    @Override
     public CourseProgram getById(Long id) {
         return courseProgramRepository.findById(id).orElse(null);
     }
@@ -79,10 +66,23 @@ public class CourseProgramServiceImpl implements CourseProgramService {
 
     @Override
     public List<CourseProgramModel> getAllCourseProgramModelByCourseId(Long id) {
-        return courseProgramRepository.findAllByCourseId(id)
+        return courseProgramRepository.findAllByCourse_Id(id)
                 .stream()
                 .map(courseProgramConverter::convertFromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CourseProgramModel updateCurseProgram(UpdateCourseProgramModel updateCourseProgramModel) {
+        Long programId = updateCourseProgramModel.getId();
+        CourseProgram dataCourseProgram = getDataCourseProgramByIdWithCheckAccess(programId);
+
+        validateLengthVariables(updateCourseProgramModel);
+        validateVariablesForNullOrIsEmptyUpdate(updateCourseProgramModel);
+
+        setVariablesForUpdateCourseProgram(dataCourseProgram, updateCourseProgramModel);
+        courseProgramRepository.save(dataCourseProgram);
+        return courseProgramConverter.convertFromEntity(dataCourseProgram);
     }
 
     @Override

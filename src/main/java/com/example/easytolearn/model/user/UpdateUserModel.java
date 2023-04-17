@@ -8,10 +8,10 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class UpdateUserModel {
+public class UpdateUserModel implements BaseUserModel {
     private Long id;
     private String fullName;
     private LocalDate birthDay;

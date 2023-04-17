@@ -36,7 +36,7 @@ public class CourseImageServiceImpl implements CourseImageService {
     public CourseImageModel createCourseImage(MultipartFile multipartFile, Long courseId) {
         Course course = getDataCourseByCourseIdWithCheckAccess(courseId);
 
-        CourseImage courseImage = courseImageRepository.findByCourseId(courseId).orElse(null);
+        CourseImage courseImage = courseImageRepository.findByCourse_Id(courseId).orElse(null);
 
         if (courseImage != null)
             throw new ApiFailException("Изображение курса готово");
@@ -62,7 +62,7 @@ public class CourseImageServiceImpl implements CourseImageService {
 
     @Override
     public CourseImageModel getCourseImageModelByCourseId(Long courseId) {
-        CourseImage courseImage = courseImageRepository.findByCourseId(courseId).orElse(null);
+        CourseImage courseImage = courseImageRepository.findByCourse_Id(courseId).orElse(null);
         return courseImageConverter.convertFromEntity(courseImage);
     }
 

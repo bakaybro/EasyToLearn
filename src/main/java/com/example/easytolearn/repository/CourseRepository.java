@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findAllByUserId(Long userId);
+    List<Course> findAllByUser_Id(Long id);
 
-    List<Course> findAllByCategoryId(Long categoryId);
+    List<Course> findAllByCategory_Id(Long id);
 
     @Query("FROM Course c WHERE c.courseName LIKE :courseName%")
     List<Course> findAllByCourseName(@Param("courseName") String courseName);

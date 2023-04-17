@@ -8,9 +8,9 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class UserBalanceModel {
     private Long id;
     private Long userId;

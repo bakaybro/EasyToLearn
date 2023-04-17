@@ -1,10 +1,9 @@
 package com.example.easytolearn.entity;
 
+import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -15,19 +14,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User extends BaseEntity {
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name", length = 100, nullable = false)
     private String fullName;
 
     @Column(name = "birth_day")
     private LocalDate birthDay;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", length = 100, nullable = false, unique = true)
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", length = 100, nullable = false)
     private String password;
 
     @Column(name = "is_active", nullable = false)

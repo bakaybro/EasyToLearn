@@ -5,7 +5,7 @@ import com.example.easytolearn.model.CategoryModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CategoryConverter extends BaseConverter<CategoryModel, Category>{
+public class CategoryConverter extends BaseConverter<CategoryModel, Category> {
 
     public CategoryConverter() {
         super(CategoryConverter::convertToEntity, CategoryConverter::convertToModel);

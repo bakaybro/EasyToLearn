@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface LikeService extends BaseService<Like> {
     LikeModel createLikeByCourseId(Long courseId);
-    LikeModel deleteLikeByCourseId(Long courseId);
+
+    LikeModel deleteLike(Long courseId);
+
     LikeModel getLikeModelById(Long id);
-    List<LikeModel> getAllLikeModelByCourseId(Long courseId);
+
+    List<LikeModel> getAllLikeModelByCourseId(Long id);
 }

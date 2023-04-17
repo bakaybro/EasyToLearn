@@ -8,16 +8,28 @@ import java.util.List;
 
 public interface UserService extends BaseService<User> {
     UserProfileDataModel createUser(CreateUserModel createUserModel);
+
     UserProfileDataModel updateUser(UpdateUserModel updateUserModel);
+
     User setInActiveUser(User user, Long status);
+
     BaseUserModel deleteUser();
-    BaseUserModel deleteUserByAdmin();
+
+    BaseUserModel deleteUserByAdmin(Long userId);
+
     User getCurrentUser();
+
     User getByUsername(String name);
+
     User getByEmail(String email);
+
     BaseUserModel getUserModelById(Long id);
+
     BaseUserModel getCurrentUserModel();
+
     List<BaseUserModel> getAllUserModels();
+
     BaseUserModel resetPassword(ResetPasswordModel resetPasswordModel);
-    UserProfileDataModel getBasicAuthorizeHeaderByAuthorizeModel(UserAuthorizationModel userAuthorizationModel);
+
+    UserProfileDataModel getBasicAuthorizeHeaderByAuthorizeModel(UserAuthorizModel userAuthorizModel);
 }

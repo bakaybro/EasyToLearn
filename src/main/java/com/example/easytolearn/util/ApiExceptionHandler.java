@@ -16,7 +16,7 @@ public class ApiExceptionHandler {
         ResponseMessage<String> failResponseMessage =
                 new ResponseMessage<String>().prepareFailMessage(apiFailException.getMessage());
         String threwClassName = apiFailException.getStackTrace()[0].getClassName();
-        log.warn(threwClassName + " -> " + apiFailException.getMessage());
+        log.warn(threwClassName + " : " + apiFailException.getMessage());
         return ResponseEntity.ok(failResponseMessage);
     }
 
@@ -25,7 +25,7 @@ public class ApiExceptionHandler {
         ResponseMessage<String> errorResponseMessage =
                 new ResponseMessage<String>().prepareErrorMessage(apiErrorException.getMessage());
         String threwClassName = apiErrorException.getStackTrace()[0].getClassName();
-        log.warn(threwClassName + " -> " + apiErrorException.getMessage());
+        log.error(threwClassName + " : " + apiErrorException.getMessage());
         return ResponseEntity.ok(errorResponseMessage);
     }
 }

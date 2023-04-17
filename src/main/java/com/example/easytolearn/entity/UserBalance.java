@@ -1,14 +1,16 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "users_balance")
+@Table(name = "users_balances")
+@Check(constraints = "balance >= 0")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +22,6 @@ public class UserBalance extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 }

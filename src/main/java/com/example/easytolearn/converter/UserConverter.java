@@ -1,9 +1,7 @@
 package com.example.easytolearn.converter;
 
 import com.example.easytolearn.entity.User;
-import com.example.easytolearn.model.user.BaseUserModel;
-import com.example.easytolearn.model.user.UpdateUserModel;
-import com.example.easytolearn.model.user.UserModelToSend;
+import com.example.easytolearn.model.user.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,10 +16,10 @@ public class UserConverter extends BaseConverter<BaseUserModel, User> {
 
         return UserModelToSend.builder()
                 .id(entityToConvert.getId())
-                .birthDay(entityToConvert.getBirthDay())
                 .fullName(entityToConvert.getFullName())
-                .email(entityToConvert.getEmail())
+                .birthDay(entityToConvert.getBirthDay())
                 .username(entityToConvert.getUsername())
+                .email(entityToConvert.getEmail())
                 .isActive(entityToConvert.getIsActive())
                 .build();
     }
@@ -30,14 +28,15 @@ public class UserConverter extends BaseConverter<BaseUserModel, User> {
         if (modelToConvert == null) return null;
 
         User user = new User();
+
         if (modelToConvert instanceof UpdateUserModel) {
             user.setId(((UpdateUserModel) modelToConvert).getId());
         }
-
         user.setFullName(modelToConvert.getFullName());
         user.setUsername(modelToConvert.getUsername());
         user.setEmail(modelToConvert.getEmail());
         user.setPassword(modelToConvert.getPassword());
+        user.setBirthDay(modelToConvert.getBirthDay());
 
         return user;
     }

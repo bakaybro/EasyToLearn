@@ -1,12 +1,13 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
+
 @Entity
-@Table(name = "users_role")
+@Table(name = "user_role")
 @Getter
 @Setter
 @NoArgsConstructor

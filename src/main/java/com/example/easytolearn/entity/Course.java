@@ -1,8 +1,8 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -32,7 +32,7 @@ public class Course extends BaseEntity {
     @Column(name = "course_info_title", length = 100)
     private String courseInfoTitle;
 
-    @Column(name = "course_info", length = 1500)
+    @Column(name = "course_info", length = 2000)
     private String courseInfo;
 
     @Column(name = "course_info_url")

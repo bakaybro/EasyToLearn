@@ -11,12 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
-@Configuration
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -34,7 +33,51 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(HttpMethod.PUT, "/api/user/update").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/user/delete").authenticated()
-                .antMatchers(HttpMethod.GET, "/api/user/get-by-id/{id}").authenticated();
+                .antMatchers(HttpMethod.GET, "/api/user/get-by-id/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/course-image/create/{courseId}").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/course-image/update/{id}").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/course-image/delete/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/course/create").authenticated()
+                .antMatchers(HttpMethod.PUT, "api/course/update").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/course/delete/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/course-image/create/{courseId}").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/course-image/update/{id}").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/course-image/delete/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/user-image/create").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/user-image/update").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/user-image/delete").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/purchase/create-by-course-id/{courseId}").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/purchase/get-all-purchased-curses/{userId}").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/purchase/get-by-id/{id}").authenticated()
+                .antMatchers(HttpMethod.GET, "/get-all-customers/by-course-id/{courseId}").authenticated()
+
+                .antMatchers(HttpMethod.PUT, "/api/balance/update").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/balance/get-by-user-id/{userId}").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/balance/get-by-id/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/like/create/{courseId}").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/like/delete/{courseId}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/lesson/create").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/lesson/update").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/lesson/delete/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/course-program/create").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/course-program/update").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/course-program/delete/{id}").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/api/comment/create").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/comment/update").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/comment/delete/{id}").authenticated()
+
+                .anyRequest().permitAll()
+                .and()
+                .httpBasic();
     }
 
     @Override

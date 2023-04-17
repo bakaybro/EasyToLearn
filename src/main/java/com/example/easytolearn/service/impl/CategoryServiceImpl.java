@@ -25,21 +25,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
-    }
-
-    @Override
     public CategoryModel createCategory(String categoryName) {
         validateCategoryName(categoryName);
         Category category = categoryRepository.findByCategoryName(categoryName).orElse(null);
 
-        if (category != null) throw new ApiFailException("Категория " + categoryName + " уже существует");
+        if (category != null)
+            throw new ApiFailException("Категория " + categoryName + " уже существует");
 
         category = new Category();
         category.setCategoryName(categoryName.toLowerCase(Locale.ROOT));
@@ -48,20 +39,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryModel updateCategory(CategoryModel categoryModel) {
-        Long categoryId = categoryModel.getId();
-
-        if (categoryId == null) throw new ApiFailException("Укажите ID категории");
-
-        Category dataCategory = getById(categoryId);
-
-        if (dataCategory == null) throw new ApiFailException("Категория под ID " + categoryId + " не найдена");
-
-        String updateCategoryName = categoryModel.getCategoryName();
-        validateCategoryName(updateCategoryName);
-        dataCategory.setCategoryName(updateCategoryName.toLowerCase(Locale.ROOT));
-        categoryRepository.save(dataCategory);
-        return categoryModel;
+    public Category getById(Long id) {
+        return categoryRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -78,6 +57,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<Category> getAll() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
     public List<CategoryModel> getAllCategoryModel() {
         return getAll()
                 .stream()
@@ -85,8 +69,29 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public CategoryModel updateCategory(CategoryModel categoryModel) {
+        Long categoryId = categoryModel.getId();
+
+        if (categoryId == null)
+            throw new ApiFailException("Не указан ID категории");
+
+        Category dataCategory = getById(categoryId);
+
+        if (dataCategory == null)
+            throw new ApiFailException("Категория под ID " + categoryId + " не найдена");
+
+        String updateCategoryName = categoryModel.getCategoryName();
+        validateCategoryName(updateCategoryName);
+        dataCategory.setCategoryName(updateCategoryName.toLowerCase(Locale.ROOT));
+        categoryRepository.save(dataCategory);
+        return categoryModel;
+    }
+
     private void validateCategoryName(String categoryName) {
-        if (categoryName == null || categoryName.isEmpty()) throw new ApiFailException("Введите название категории");
-        if (categoryName.length() > 50) throw new ApiFailException("Длина символов не должно превышать 50");
+        if (categoryName == null || categoryName.isEmpty())
+            throw new ApiFailException("Название категории не заполнено");
+        if (categoryName.length() > 50)
+            throw new ApiFailException("Длинна символов ограниченно(50)");
     }
 }

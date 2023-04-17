@@ -78,14 +78,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentModel> getAllCommentModelByCourseId(Long courseId) {
         return commentRepository
-                .findAllByCourseId(courseId)
+                .findAllByCourse_Id(courseId)
                 .stream()
                 .map(commentConverter::convertFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CommentModel updateModel(UpdateCommentModel updateCommentModel) {
+    public CommentModel updateComment(UpdateCommentModel updateCommentModel) {
         Long commentId = updateCommentModel.getId();
         Comment dataComment = getDataCommentByIdWithCheckAccess(commentId, false);
 
@@ -98,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentModel deleteCommentById(Long id) {
+    public CommentModel deleteComment(Long id) {
         Comment deleteComment = getDataCommentByIdWithCheckAccess(id, true);
         commentRepository.delete(deleteComment);
         return commentConverter.convertFromEntity(deleteComment);

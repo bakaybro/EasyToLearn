@@ -1,15 +1,13 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
+
 @Entity
-@Table(name = "likes")
+@Table(name = "likes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "course_id"})})
 @Getter
 @Setter
 @NoArgsConstructor

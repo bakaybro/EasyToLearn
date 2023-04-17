@@ -2,42 +2,43 @@ package com.example.easytolearn.service.impl;
 
 import com.example.easytolearn.converter.UserConverter;
 import com.example.easytolearn.entity.User;
-import com.example.easytolearn.entity.UserAuth;
+import com.example.easytolearn.entity.UserLog;
 import com.example.easytolearn.entity.UserBalance;
 import com.example.easytolearn.entity.UserRole;
 import com.example.easytolearn.exception.ApiFailException;
+import com.example.easytolearn.model.course.CourseDataModel;
 import com.example.easytolearn.model.user.*;
-import com.example.easytolearn.model.userImage.ResetPasswordModel;
 import com.example.easytolearn.repository.UserRepository;
-import com.example.easytolearn.service.UserAuthService;
-import com.example.easytolearn.service.UserBalanceService;
-import com.example.easytolearn.service.UserRoleService;
-import com.example.easytolearn.service.UserService;
+import com.example.easytolearn.service.*;
 import com.example.easytolearn.util.RegexUtil;
+import com.example.easytolearn.model.userImage.ResetPasswordModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Base64;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-
+    @Autowired
+    private UserImageService userImageService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
     private UserBalanceService userBalanceService;
-//    @Autowired
-//    private UserCourseMappingService userCourseMappingService;
+    @Autowired
+    private UserCourseMappingService userCourseMappingService;
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
-    private final UserAuthService userAuthService;
     private final PasswordEncoder passwordEncoder;
-//    private final UserLogService userLogService;
-    private final UserConverter userConverter;
-
+    private final UserLogService userLogService;
+    private final UserConverter converter;
 
     @Override
     public User save(User user) {
@@ -59,8 +60,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public UserProfileDataModel createUser(CreateUserModel createUserModel) {
+        validateVariablesForNullOrIsEmpty(createUserModel);
+        validateLengthVariables(createUserModel);
+        RegexUtil.validateUsername(createUserModel.getUsername());
+        RegexUtil.validateEmail(createUserModel.getEmail());
+        checkUsernameAndEmail(createUserModel);
+
+        String token = getBasicToken(createUserModel.getUsername(), createUserModel.getPassword());
+
+        User dataUser = converter.convertFromModel(createUserModel);
+        save(dataUser);
+        return getUserProfileDataModelByUserId(token, dataUser.getId());
+    }
+
+    @Override
+    public UserProfileDataModel getBasicAuthorizeHeaderByAuthorizeModel(UserAuthorizModel userAuthorizModel) {
+        User user = userRepository.findByUsername(userAuthorizModel.getUsername())
+                .orElseThrow(() -> new ApiFailException("Неправильное имя пользователя или пароль"));
+
+        boolean isPasswordIsCorrect = passwordEncoder.matches(userAuthorizModel.getPassword(), user.getPassword());
+
+        checkUserActiveStatus(user);
+        checkFailPassword(isPasswordIsCorrect, user);
+
+        userLogService.save(new UserLog(user, true));
+        String token = getBasicToken(userAuthorizModel.getUsername(), userAuthorizModel.getPassword());
+        return getUserProfileDataModelByUserId(token, user.getId());
     }
 
     @Override
@@ -69,21 +95,75 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileDataModel createUser(CreateUserModel createUserModel) {
-        validateVariablesForNullOrIsEmpty(createUserModel);
-        RegexUtil.validateUsername(createUserModel.getUsername());
-        RegexUtil.validateEmail(createUserModel.getEmail());
-//        checkUsernameAndEmail(createUserModel);
+    public List<BaseUserModel> getAllUserModels() {
+        return getAll().stream()
+                .map(converter::convertFromEntity).collect(Collectors.toList());
+    }
 
-        String token = getBasicToken(createUserModel.getUsername(), createUserModel.getPassword());
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 
-//        User userData = userConverter.convertFromModel(createUserModel);
-        return null;
+    @Override
+    public BaseUserModel getUserModelById(Long id) {
+        return converter.convertFromEntity(getById(id));
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        return getByUsername(login);
+    }
+
+    @Override
+    public BaseUserModel getCurrentUserModel() {
+        return converter.convertFromEntity(getCurrentUser());
     }
 
     @Override
     public UserProfileDataModel updateUser(UpdateUserModel updateUserModel) {
-        return null;
+        User dataUser = getDataUserWithCheckAccess(updateUserModel.getId());
+
+        validateVariablesForNullOrIsEmptyUpdate(updateUserModel);
+        validateLengthVariables(updateUserModel);
+        RegexUtil.validateEmail(updateUserModel.getEmail());
+        RegexUtil.validateUsername(updateUserModel.getUsername());
+        checkUsernameAndEmail(updateUserModel);
+
+        setVariablesForUpdateUser(dataUser, updateUserModel);
+        dataUser = userRepository.save(dataUser);
+
+        String token = null;
+        if (updateUserModel.getPassword() != null)
+            token = getBasicToken(dataUser.getUsername(), updateUserModel.getPassword());
+        return getUserProfileDataModelByUserId(token, dataUser.getId());
+    }
+
+    @Override
+    public BaseUserModel resetPassword(ResetPasswordModel resetPasswordModel) {
+        String email = new String(Base64.getDecoder().decode(resetPasswordModel.getEncodeEmail().getBytes()));
+        User user = getByEmail(email);
+
+        String newPassword = resetPasswordModel.getPassword();
+        if (newPassword == null || newPassword.isEmpty())
+            throw new ApiFailException("Password не заполнен");
+        if (newPassword.length() < 6)
+            throw new ApiFailException("Количество символов пароля должно быть более 5");
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return converter.convertFromEntity(user);
     }
 
     @Override
@@ -94,108 +174,131 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BaseUserModel deleteUser() {
-        return null;
+        User user = getCurrentUser();
+        User deleteUser = setInActiveUser(user, -1L);
+        return converter.convertFromEntity(deleteUser);
     }
 
     @Override
-    public BaseUserModel deleteUserByAdmin() {
-        return null;
+    public BaseUserModel deleteUserByAdmin(Long userId) {
+        User user = getById(userId);
+        User deleteUser = setInActiveUser(user, -1L);
+        return converter.convertFromEntity(deleteUser);
     }
 
-    @Override
-    public User getCurrentUser() {
-        return null;
-    }
+    private User getDataUserWithCheckAccess(Long userId) {
+        if (userId == null)
+            throw new ApiFailException("Не указан id пользователя");
 
-    @Override
-    public User getByUsername(String name) {
-        return null;
-    }
+        User dataUser = getById(userId);
+        if (dataUser == null)
+            throw new ApiFailException("Пользователь под ID " + userId + " не найден");
 
-    @Override
-    public User getByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
-    }
+        if (!userId.equals(getCurrentUser().getId()))
+            throw new ApiFailException("Доступ ограничен");
 
-    @Override
-    public BaseUserModel getUserModelById(Long id) {
-        return null;
-    }
-
-    @Override
-    public BaseUserModel getCurrentUserModel() {
-        return null;
-    }
-
-    @Override
-    public List<BaseUserModel> getAllUserModels() {
-        return null;
-    }
-
-    @Override
-    public BaseUserModel resetPassword(ResetPasswordModel resetPasswordModel) {
-        return null;
-    }
-
-    @Override
-    public UserProfileDataModel getBasicAuthorizeHeaderByAuthorizeModel(UserAuthorizationModel userAuthorizationModel) {
-        return null;
-    }
-
-    private User getUserDataWithAccessVerification(Long userId) {
-        if (userId == null) throw new ApiFailException("Забыли указать ID пользователя");
-        User userData = getById(userId);
-
-        if (userData == null) throw new ApiFailException("Не удалось найти пользователя под ID:" + userId);
-
-        if (!userId.equals(getCurrentUser().getId())) throw new ApiFailException("Доступ ограничен!");
-
-        return userData;
+        return dataUser;
     }
 
     private String getBasicToken(String username, String password) {
         String usernamePasswordPair = username + ":" + password;
         String authHeader = new String(Base64.getEncoder().encode(usernamePasswordPair.getBytes()));
-        return "Basic : " + authHeader;
+        return "Basic " + authHeader;
     }
 
     private void validateVariablesForNullOrIsEmpty(CreateUserModel createUserModel) {
         if (createUserModel.getFullName() == null || createUserModel.getFullName().isEmpty())
-            throw new ApiFailException("Введите свое полное имя.");
-        if (createUserModel.getEmail() == null || createUserModel.getEmail().isEmpty())
-            throw new ApiFailException("Введите свой эл.адрес.");
+            throw new ApiFailException("Full name не заполнен");
         if (createUserModel.getUsername() == null || createUserModel.getUsername().isEmpty())
-            throw new ApiFailException("Придумайте логин.");
+            throw new ApiFailException("Username не заполнен");
+        if (createUserModel.getEmail() == null || createUserModel.getEmail().isEmpty())
+            throw new ApiFailException("Email не заполнен");
         if (createUserModel.getPassword() == null || createUserModel.getPassword().isEmpty())
-            throw new ApiFailException("Придумайте пароль.");
+            throw new ApiFailException("Password не заполнен");
     }
 
-    private void validateVariablesForNullOrIsEmptyForUpdate(UpdateUserModel updateUserModel) {
-        if (updateUserModel.getFullName() == null)
-            throw new ApiFailException("Введите свое полное имя.");
-        if (updateUserModel.getEmail() == null)
-            throw new ApiFailException("Введите свой эл.адрес.");
-        if (updateUserModel.getUsername() == null)
-            throw new ApiFailException("Придумайте логин.");
-        if (updateUserModel.getPassword() == null)
-            throw new ApiFailException("Придумайте пароль.");
+    private void validateVariablesForNullOrIsEmptyUpdate(UpdateUserModel userModel) {
+        if (userModel.getEmail() != null && userModel.getFullName().isEmpty())
+            throw new ApiFailException("Full name не заполнен");
+        if (userModel.getUsername() != null && userModel.getUsername().isEmpty())
+            throw new ApiFailException("Username не заполнен");
+        if (userModel.getEmail() != null && userModel.getEmail().isEmpty())
+            throw new ApiFailException("Email is не заполнен");
+        if (userModel.getPassword() != null && userModel.getPassword().isEmpty())
+            throw new ApiFailException("Password не заполнен");
+    }
+
+    private void validateLengthVariables(BaseUserModel baseUserModel) {
+        if (baseUserModel.getFullName() != null && baseUserModel.getFullName().length() > 100)
+            throw new ApiFailException("Длинна символов full name ограниченно(100)");
+        if (baseUserModel.getUsername() != null && baseUserModel.getUsername().length() > 100)
+            throw new ApiFailException("Длинна символов username ограниченно(100)");
+        if (baseUserModel.getEmail() != null && baseUserModel.getEmail().length() > 100)
+            throw new ApiFailException("Длинна символов email ограниченно(100)");
+        if (baseUserModel.getPassword() != null && baseUserModel.getPassword().length() > 100)
+            throw new ApiFailException("Длинна символов password ограниченно(100)");
+        else if (baseUserModel.getPassword() != null && baseUserModel.getPassword().length() < 6)
+            throw new ApiFailException("Количество символов пароля должно быть более 5");
     }
 
     private void checkUsernameAndEmail(BaseUserModel baseUserModel) {
-        User userGetByUsername = getByUsername(baseUserModel.getUsername());
-        User userGetByEmail = getByEmail(baseUserModel.getEmail());
+        User dataUserByUserName = getByUsername(baseUserModel.getUsername());
+        User dataUserByEmail = getByEmail(baseUserModel.getEmail());
 
-        if (userGetByUsername != null)
-            throw new ApiFailException("Username " + userGetByUsername.getUsername() + " уже знаято");
+        if (dataUserByUserName != null)
+            throw new ApiFailException("Username " + dataUserByUserName.getUsername() + " уже существует");
 
-        if (userGetByEmail != null)
-            throw new ApiFailException("Email " + userGetByEmail.getEmail() + " уже занято");
+        if (dataUserByEmail != null)
+            throw new ApiFailException("Email " + dataUserByEmail.getEmail() + " уже используется");
     }
 
     private void checkUserActiveStatus(User user) {
-        if (user.getIsActive() == -1) throw new ApiFailException("Такого пользователя не сеществует");
+        if (user.getIsActive() == -1)
+            throw new ApiFailException("Пользователь не найден");
         if (user.getIsActive() == 0) {
-//            UserAuth userAuth =
+            UserLog userLog = userLogService.getLastLogByUserId(user.getId());
+            if (LocalDateTime.now().isAfter(userLog.getCreateDate().plusMinutes(5)))
+                setInActiveUser(user, 1L);
+            else throw new ApiFailException("Вы были заблокированный на 5 минут");
         }
+    }
+
+    private void checkFailPassword(boolean isPasswordIsCorrect, User user) {
+        if (!isPasswordIsCorrect) {
+            userLogService.save(new UserLog(user, false));
+
+            boolean needToBan = userLogService.hasThreeFailsLastsLogsByUserId(user.getId());
+
+            if (needToBan)
+                setInActiveUser(user, 0L);
+
+            throw new ApiFailException("Неправильное имя пользователя или пароль");
+        }
+    }
+
+    private UserProfileDataModel getUserProfileDataModelByUserId(String token, Long userId) {
+        UserProfileDataModel dataBaseModel = new UserProfileDataModel();
+        dataBaseModel.setToken(token);
+        List<CourseDataModel> userCreateCourses = courseService.getAllCourseDataModelByUserId(userId);
+        List<CourseDataModel> userPurchasedCourses = userCourseMappingService.getAllPurchasedCourses(userId);
+        dataBaseModel.setUserModelToSend((UserModelToSend) getUserModelById(userId));
+        dataBaseModel.setUserBalanceModel(userBalanceService.getUserBalanceModelByUserId(userId));
+        dataBaseModel.setUserImageModel(userImageService.getUserImageModelByUserId(userId));
+        dataBaseModel.setUserCreateCourseModels(userCreateCourses);
+        dataBaseModel.setUserPurchasedCourseModels(userPurchasedCourses);
+        return dataBaseModel;
+    }
+
+    private void setVariablesForUpdateUser(User user, UpdateUserModel updateUserModel) {
+        if (updateUserModel.getUsername() != null)
+            user.setUsername(updateUserModel.getUsername());
+        if (updateUserModel.getFullName() != null)
+            user.setFullName(updateUserModel.getFullName());
+        if (updateUserModel.getEmail() != null)
+            user.setEmail(updateUserModel.getEmail());
+        if (updateUserModel.getPassword() != null)
+            user.setPassword(passwordEncoder.encode(updateUserModel.getPassword()));
+        if (updateUserModel.getBirthDay() != null)
+            user.setBirthDay(updateUserModel.getBirthDay());
     }
 }

@@ -1,21 +1,23 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "course_program")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor@Builder
+@AllArgsConstructor
+@Builder
 public class CourseProgram extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false, length = 1500)
+    @Column(nullable = false, length = 1000)
     private String description;
 
     @ManyToOne

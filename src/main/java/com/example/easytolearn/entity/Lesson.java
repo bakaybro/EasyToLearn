@@ -1,9 +1,10 @@
 package com.example.easytolearn.entity;
 
-import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "lessons")
@@ -13,7 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @Builder
 public class Lesson extends BaseEntity {
-    @Column(name = "lesson_info", nullable = false, length = 1500)
+    @Column(name = "lesson_info", nullable = false, length = 1000)
     private String lessonInfo;
 
     @Column(name = "lesson_url")

@@ -5,6 +5,7 @@ import com.example.easytolearn.entity.Course;
 import com.example.easytolearn.entity.Like;
 import com.example.easytolearn.entity.User;
 import com.example.easytolearn.exception.ApiFailException;
+import com.example.easytolearn.model.LikeModel;
 import com.example.easytolearn.repository.LikeRepository;
 import com.example.easytolearn.service.CourseService;
 import com.example.easytolearn.service.LikeService;
@@ -12,7 +13,6 @@ import com.example.easytolearn.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.easytolearn.model.LikeModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public class LikeServiceImpl implements LikeService {
         Course course = courseService.getById(courseId);
 
         Like like = likeRepository
-                .findByCourseIdAndUserId(courseId, user.getId())
+                .findByCourse_IdAndUser_Id(courseId, user.getId())
                 .orElse(null);
 
         validateLike(course, like);
@@ -68,16 +68,16 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public List<LikeModel> getAllLikeModelByCourseId(Long id) {
         return likeRepository
-                .findAllByCourseId(id)
+                .findAllByCourse_Id(id)
                 .stream()
                 .map(likeConverter::convertFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public LikeModel deleteLikeByCourseId(Long courseId) {
+    public LikeModel deleteLike(Long courseId) {
         Long currentUserId = userService.getCurrentUser().getId();
-        Like dataLike = likeRepository.findByCourseIdAndUserId(courseId, currentUserId).orElse(null);
+        Like dataLike = likeRepository.findByCourse_IdAndUser_Id(courseId, currentUserId).orElse(null);
         if (dataLike == null)
             throw new ApiFailException("Like not found");
 

@@ -13,7 +13,9 @@ public class RegexUtil {
         if (phoneNumber != null) {
             String phoneNumberRegex = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$";
             Matcher matcher = Pattern.compile(phoneNumberRegex).matcher(phoneNumber);
-            if (!matcher.matches()) throw new ApiFailException("Incorrect phone number format!");
+            if (!matcher.matches()) {
+                throw new ApiFailException("Incorrect phone number format");
+            }
         }
     }
 
@@ -22,7 +24,9 @@ public class RegexUtil {
             String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                     + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
             Matcher matcher = Pattern.compile(emailRegex).matcher(email);
-            if (!matcher.matches()) throw new ApiFailException("Incorrect email format!");
+            if (!matcher.matches()) {
+                throw new ApiFailException("Incorrect email format");
+            }
         }
     }
 
@@ -30,7 +34,9 @@ public class RegexUtil {
         if (username != null) {
             String usernameRegex = "^[a-zA-Z0-9._-]{3,}$";
             Matcher matcher = Pattern.compile(usernameRegex).matcher(username);
-            if (!matcher.matches()) throw new ApiFailException("Incorrect username format!");
+            if (!matcher.matches()) {
+                throw new ApiFailException("Incorrect username format");
+            }
         }
     }
 }
