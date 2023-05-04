@@ -83,6 +83,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/order/update").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/order/delete-by-id/{id}").authenticated()
 
+                .antMatchers(HttpMethod.POST, "/api/book-orders/create").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/book-orders/update").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/book-orders/delete-by-id/{id}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/order/{id}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/get-by-id/{id}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/get-all").authenticated()
+
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
