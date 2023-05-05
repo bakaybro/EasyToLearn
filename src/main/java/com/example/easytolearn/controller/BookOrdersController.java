@@ -22,7 +22,7 @@ public class BookOrdersController {
                 .prepareSuccessMessage(bookOrdersService.getAll());
     }
 
-    @GetMapping("get-by-id/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseMessage<BookOrders> getById(@PathVariable Long id) {
         return new ResponseMessage<BookOrders>()
                 .prepareSuccessMessage(bookOrdersService.getById(id));
