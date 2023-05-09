@@ -96,6 +96,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/delivery/get-all").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/delivery/delete-by-id/{id}").authenticated()
 
+
+                .antMatchers(HttpMethod.POST, "/api/book-image/create/{bookId}").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/book-image/update/{id}").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/book-image/delete/{id}").authenticated()
+
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
